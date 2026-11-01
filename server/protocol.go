@@ -170,8 +170,8 @@ func HandleRequest(request HttpRequest) HttpResponse {
 	headers := request.Headers
 
 	requestLine := method + " " + uri + " " + version
-	fmt.Println("requestLine:", requestLine)
-	fmt.Println("headers:", headers)
+	// fmt.Println("requestLine:", requestLine)
+	// fmt.Println("headers:", headers)
 
 	if !utils.IsRequestLineValid(requestLine) || !utils.IsHeadersValid(headers, "server") {
 		fmt.Println("heree1")
@@ -266,7 +266,7 @@ func ResponseEncoder(response HttpResponse) ([]byte, error) {
 	}
 
 	body := response.Body
-	fmt.Println("body here:", body)
+	// fmt.Println("body here:", body)
 
 	// Kompresi gzip hanya untuk response 200
 	headers := response.Headers
@@ -319,7 +319,7 @@ func ResponseEncoder(response HttpResponse) ([]byte, error) {
 	// Gabungkan headers dan body
 	encoded := append([]byte(responseStr.String()), body...)
 
-	fmt.Println("encoded:", encoded)
+	// fmt.Println("encoded:", encoded)
 	return encoded, nil
 }
 
@@ -343,13 +343,13 @@ func HandleConnection(conn net.Conn) error {
 
 	for !strings.HasSuffix(string(request), "\r\n\r\n") {
 		line, err := reader.ReadString('\n')
-		fmt.Println("line:", line)
+		// fmt.Println("line:", line)
 		if err != nil {
 			return err
 		}
 
 		request = append(request, []byte(line)...)
-		fmt.Println("Will stop:", strings.HasSuffix(string(request), "\r\n\r\n"))
+		// fmt.Println("Will stop:", strings.HasSuffix(string(request), "\r\n\r\n"))
 	}
 
 	if err != nil {

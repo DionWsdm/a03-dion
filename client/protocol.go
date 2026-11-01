@@ -43,7 +43,7 @@ func getHeadersBytes(headers a03.Headers) []byte {
 	}
 
 	copy(headersBytes[index:], []byte("\r\n"))
-	fmt.Println("headersBytes:", headersBytes)
+	// fmt.Println("headersBytes:", headersBytes)
 	return headersBytes
 }
 
@@ -51,11 +51,11 @@ func getRequestError(requestLine string, headers a03.Headers) error {
 	var err error
 
 	if !utils.IsHeadersValid(headers, "client") {
-		fmt.Println("Headers invalid")
+		// fmt.Println("Headers invalid")
 		err = a03.ErrBadRequest
 	} else if !utils.IsRequestLineValid(requestLine) {
 
-		fmt.Println("Request line invalid:", requestLine)
+		// fmt.Println("Request line invalid:", requestLine)
 		err = a03.ErrBadRequest
 	}
 
@@ -87,7 +87,7 @@ func RequestEncoder(request HttpRequest) ([]byte, error) {
 	requestLine = method + " " + uri + " " + "HTTP/1.1" + "\r\n"
 	n := len(requestLine)
 
-	fmt.Println("accept-encoding:", headers["accept-encoding"])
+	// fmt.Println("accept-encoding:", headers["accept-encoding"])
 	if !strings.Contains(headers["accept-encoding"], "gzip") {
 		delete(headers, "accept-encoding")
 	}
@@ -120,12 +120,12 @@ func splitResponseStr(message string) (string, string, string, string) {
 	var index int
 	index = strings.Index(message, " ")
 	version := message[0:index]
-	fmt.Println("version:", version)
+	// fmt.Println("version:", version)
 
 	message = message[index+1:]
 	index = strings.Index(message, " ")
 	statusCodeStr := message[0:index]
-	fmt.Println("statusCodeStr:", statusCodeStr)
+	// fmt.Println("statusCodeStr:", statusCodeStr)
 
 	message = message[index+1:]
 	index = strings.Index(message, "\r\n")
@@ -133,11 +133,11 @@ func splitResponseStr(message string) (string, string, string, string) {
 
 	index = strings.LastIndex(message, "\r\n\r\n")
 	headersStr := message[0:index]
-	fmt.Println("headersStr:", headersStr)
+	// fmt.Println("headersStr:", headersStr)
 
-	fmt.Println("message[index+4]:", string(message[index+4:]))
+	// fmt.Println("message[index+4]:", string(message[index+4:]))
 	body := message[index+4:]
-	fmt.Println("body:", body)
+	// fmt.Println("body:", body)
 
 	return version, statusCodeStr, headersStr, body
 }
@@ -179,27 +179,27 @@ func ResponseDecoder(message []byte) (HttpResponse, error) {
 	// and decompress gzip. Reject truncated headers/bodies and invalid lengths.
 	var err error
 	messageStr := string(message)
-	fmt.Println("messageStr:", messageStr)
+	// fmt.Println("messageStr:", messageStr)
 	version, statusCodeStr, headersStr, body := splitResponseStr(messageStr)
 
 	statusCode, err := strconv.Atoi(statusCodeStr)
 	if err != nil {
-		fmt.Println(err.Error(), "here")
+		fmt.Println(err.Error())
 		return HttpResponse{}, err
 	}
 
 	headers, err := getHeadersMap(headersStr)
 	if err != nil {
-		fmt.Println(err.Error(), "here1")
+		fmt.Println(err.Error())
 		return HttpResponse{}, err
 	}
 
 	bodyBytes := []byte(body)
-	fmt.Println("bodyBytes:", bodyBytes)
+	// fmt.Println("bodyBytes:", bodyBytes)
 
 	contentLength, err := strconv.Atoi(strings.TrimSpace(headers["Content-Length"]))
 	if err != nil {
-		fmt.Println(err.Error(), "here2")
+		fmt.Println(err.Error())
 		return HttpResponse{}, err
 	}
 
@@ -210,7 +210,7 @@ func ResponseDecoder(message []byte) (HttpResponse, error) {
 	if strings.EqualFold(strings.TrimSpace(headers["content-encoding"]), "gzip") {
 		bodyBytes, err = decompressGzip(bodyBytes)
 		if err != nil {
-			fmt.Println(err.Error(), "here3")
+			fmt.Println(err.Error())
 			return HttpResponse{}, err
 		}
 	}
@@ -261,7 +261,7 @@ func Fetch(request HttpRequest, conn net.Conn) (HttpResponse, error) {
 
 	for !strings.HasSuffix(string(response), "\r\n\r\n") {
 		line, err := reader.ReadString('\n')
-		fmt.Println("line:", line)
+		// fmt.Println("line:", line)
 		if err != nil {
 			return HttpResponse{}, err
 		}
@@ -276,7 +276,7 @@ func Fetch(request HttpRequest, conn net.Conn) (HttpResponse, error) {
 			}
 		}
 		response = append(response, []byte(line)...)
-		fmt.Println("Will stop:", strings.HasSuffix(string(response), "\r\n\r\n"))
+		// fmt.Println("Will stop:", strings.HasSuffix(string(response), "\r\n\r\n"))
 	}
 
 	body := make([]byte, contentLength)
@@ -288,7 +288,7 @@ func Fetch(request HttpRequest, conn net.Conn) (HttpResponse, error) {
 	response = append(response, body...)
 
 	fmt.Println("Decoding response...")
-	fmt.Println("response:", response)
+	// fmt.Println("response:", response)
 	decodedResponse, err := ResponseDecoder(response)
 
 	fmt.Println("\n----RESPONSE----")

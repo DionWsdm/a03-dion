@@ -21,8 +21,6 @@ func IsHeaderLineValid(headerLine string) bool {
 }
 
 func IsHeadersValid(headers a03.Headers, side string) bool {
-	fmt.Println("headers:")
-	fmt.Println(headers)
 	isValid := true
 
 	host := headers["host"]
@@ -55,11 +53,9 @@ func IsHeadersValid(headers a03.Headers, side string) bool {
 }
 
 func IsRequestLineValid(requestLine string) bool {
-	fmt.Println(requestLine)
 	isValid := true
 
 	if !strings.Contains(requestLine, "\r\n") {
-		fmt.Println("hereee1")
 		isValid = false
 	}
 
@@ -67,8 +63,6 @@ func IsRequestLineValid(requestLine string) bool {
 
 	pattern := regexp.MustCompile(`^[^ \r\n]+ [^ \r\n]* HTTP/1\.1$`)
 	if !pattern.MatchString(requestLine) {
-		fmt.Println("hereee2")
-		fmt.Println("requestLine hereee2:", requestLine)
 		isValid = false
 	}
 
