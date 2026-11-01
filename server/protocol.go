@@ -208,17 +208,20 @@ func HandleRequest(request HttpRequest) HttpResponse {
 		if len(acceptSplitted) > 0 && !foundJson && !foundXml {
 			statusCode = 406
 		} else if qJson >= qXml {
+			responseHeaders["content-type"] = "application/json"
 			body, err = json.Marshal(greetResponse)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
 		} else {
+			responseHeaders["content-type"] = "application/xml"
 			body, err = xml.Marshal(greetResponse)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
 		}
 	} else if isEndpoint(uri, "/") {
+		responseHeaders["content-type"] = "text/html"
 		body = []byte("Halo, dunia! Aku " + a03.NAMA + " sedang mengerjakan A03")
 	} else {
 		statusCode = 404
